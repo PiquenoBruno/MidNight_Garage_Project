@@ -1,20 +1,15 @@
-import React from 'react';
-import Navbar from './components/navbar';
-import Hero from './components/hero';
-import CardSection from './components/CardSection';
-import About from './components/About';
-import Footer from './components/footer';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from './pages/home';
 
-const App: React.FC = () => {
+function App() {
   return (
-    <div className="bg-gray-900 min-h-screen">
-      <Navbar />
-      <Hero />
-      <CardSection />
-      <About />
-      <Footer />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+
+      </Routes>
+    </Router>
   );
-};
+}
 
 export default App;

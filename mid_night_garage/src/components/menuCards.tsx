@@ -1,12 +1,13 @@
 interface CardItem {
   title: string;
   link: string;
+  description: string;
 }
 
 const cardData: CardItem[] = [
-  { title: 'MidNight Seller', link: '#' },
-  { title: 'Garage', link: '#' },
-  { title: 'Dúvidas? Fale com a gente', link: '#' },
+  { title: 'MidNight Seller', link: '#', description: 'Venda seu carro conosco.' },
+  { title: 'Garage', link: '#', description: 'Encontre carros únicos na nossa garagem.' },
+  { title: 'Dúvidas? Fale com a gente', link: '#', description: 'Estamos aqui para te ajudar!' },
 ];
 
 export default function MenuCards() {
@@ -16,9 +17,14 @@ export default function MenuCards() {
         <a
           key={index}
           href={card.link}
-          className="bg-text-background text-text-color p-8 rounded-lg text-center shadow-md hover:bg-destaque hover:text-background transition duration-300 cursor-pointer"
+          className="group bg-text-background text-text-color p-32 rounded-lg 
+          text-center shadow-md transition-all duration-300 origin-bottom 
+          hover:-translate-y-2 hover:text-text-background hover:bg-text-color"
         >
           <h2 className="text-xl font-semibold">{card.title}</h2>
+          <p className="mt-4 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            {card.description}
+          </p>
         </a>
       ))}
     </section>

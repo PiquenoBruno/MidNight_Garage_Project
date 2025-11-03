@@ -8,7 +8,8 @@ export default function Slogan() {
         backgroundPosition: "center 0px",
       }}
     >
-      <div className="bg-cover bg-[position:center_150px] flex items-center justify-center text-center px-6 py-32 sm:py-40 md:py-48">
+      <div className="bg-cover bg-[position:center_150px] flex items-center justify-center text-center px-6 py-32 sm:py-40 md:py-48
+                    text-white drop-shadow-[0_0_4px_white]">
         <p className="text-text-color text-lg md:text-xl italic leading-relaxed">
           “Não é sobre o que você perdeu. É sobre como você chegou." <br />
           Veja nossa garagem e encontre seu estilo!

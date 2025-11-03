@@ -5,9 +5,9 @@ interface CardItem {
 }
 
 const cardData: CardItem[] = [
-  { title: 'MidNight Seller', link: '#', description: 'Venda seu carro conosco.' },
-  { title: 'Garage', link: '#', description: 'Encontre carros únicos na nossa garagem.' },
-  { title: 'Dúvidas? Fale com a gente', link: '#', description: 'Estamos aqui para te ajudar!' },
+  { title: 'MidNight Seller', link: '/vender', description: 'Venda seu carro conosco.' },
+  { title: 'Garage', link: '/type', description: 'Encontre carros únicos na nossa garagem.' },
+  { title: 'Dúvidas? Fale com a gente', link: '/contato', description: 'Estamos aqui para te ajudar!' },
 ];
 
 export default function MenuCards() {

@@ -1,8 +1,7 @@
-import Header from '../components/Header';
-import Menu from '../components/Menu';
+import Header from '../components/header';
 import MenuCards from '../components/menuCards';
 import Footer from '../components/footer';
-import Slogan from '../components/Slogan';
+import Slogan from '../components/slogan';
 import About from '../components/aboutUs';
 
 export default function Home() {
@@ -14,11 +13,11 @@ export default function Home() {
       }}
     >
       <Header />
-      <Menu />
+
       <Slogan />
       <MenuCards />
       <About />
-      <Footer />
+      <Footer /> 
     </div>
   );
 }

@@ -20,7 +20,7 @@ app = Flask(__name__)
 # ------------------------------------------------------------
 # 2. Configuração de ambiente
 NODE_API_URL = os.getenv("NODE_API_URL", "http://localhost:3000")
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "SUA_CHAVE_AQUI")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyDlrXwCFHnfmLIfDVCegyLxpNNmIT1BJ5g")
 # Inicialização do gemini
 try:
     client = genai.Client(api_key=GEMINI_API_KEY)

@@ -26,7 +26,7 @@ temp/
 # Tailwind CSS
 ########################################
 *.css.d.ts
-tailwind.config.js
+
 tailwind.config.ts
 
 ########################################

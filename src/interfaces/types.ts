@@ -1,19 +1,28 @@
 export interface User {
-  id: string;
+  id: number;
+  nome: string;
   email: string;
-  password: string; // O hash do bcrypt
-  name: string;
-  role: string;
-  createdAt: Date;
+  senha: string;
 }
-
-export interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  stock: number;
-  imageUrl: string;
-  createdAt: Date;
-  updatedAt: Date;
+export interface AdmUser {
+  id: number;
+  nome: string;
+  email: string;
+  senha: string;
+}
+export interface Carros {
+  id: number;
+  modelo: string; 
+  marca: string;
+  imagem: string; 
+  preco: number;
+  logotipo: string;
+}
+export interface Motos {
+  id: number;
+  modelo: string; 
+  marca: string;
+  imagem: string; 
+  preco: number;
+  logotipo: string;
 }

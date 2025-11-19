@@ -1,43 +1,82 @@
 import { Request, Response } from "express";
-import veiculoModel from "../models/veioculoModels";
+import veioculosModels from "../models/veioculosModels";
 
+
+// =====================
+// LISTAR VEÍCULOS
+// =====================
 const listarVeiculos = async (req: Request, res: Response) => {
   try {
     const { type } = req.query;
-
-    const data = await veiculoModel.listarVeiculos(type as string);
-
-    res.status(200).json(data);
-  } catch (error) {
+    const veiculos = await veioculosModels.listarVeiculos(type as string);
+    res.json(veiculos);
+  } catch (err) {
     res.status(500).json({ error: "Erro ao listar veículos" });
   }
 };
 
+// =====================
+// CRIAR VEÍCULO
+// =====================
 const novoVeiculo = async (req: Request, res: Response) => {
   try {
-    const data = await veiculoModel.novoVeiculo(req.body);
-    res.status(201).json({ message: "Veículo criado", data });
-  } catch (error) {
+    const { type, name, brand, year, price, description, vendido } = req.body;
+    const imagePath = req.file ? `/images/${req.file.filename}` : null;
+
+    const novo = await veioculosModels.novoVeiculo({
+      id: 0,
+      type,
+      name,
+      brand,
+      year: Number(year),
+      price: Number(price),
+      description,
+      image: imagePath,
+      vendido: vendido === "true" || vendido === true,
+    });
+
+    res.status(201).json(novo);
+  } catch (err) {
     res.status(500).json({ error: "Erro ao criar veículo" });
   }
 };
 
+// =====================
+// EDITAR VEÍCULO
+// =====================
 const editarVeiculo = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const data = await veiculoModel.editarVeiculo(Number(id), req.body);
-    res.status(200).json({ message: "Veículo atualizado", data });
-  } catch (error) {
+    const { type, name, brand, year, price, description, vendido } = req.body;
+    const imagePath = req.file ? `/images/${req.file.filename}` : req.body.image;
+
+    const editado = await veioculosModels.editarVeiculo(Number(id), {
+      id: Number(id),
+      type,
+      name,
+      brand,
+      year: Number(year),
+      price: Number(price),
+      description,
+      image: imagePath,
+      vendido: vendido === "true" || vendido === true,
+    });
+
+    res.json(editado);
+  } catch (err) {
     res.status(500).json({ error: "Erro ao editar veículo" });
   }
 };
 
+// =====================
+// REMOVER VEÍCULO
+// =====================
 const removerVeiculo = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    await veiculoModel.removerVeiculo(Number(id));
-    res.status(200).json({ message: "Veículo removido" });
-  } catch (error) {
+    const removido = await veioculosModels.removerVeiculo(Number(id));
+    res.json(removido);
+  } catch (err) {
     res.status(500).json({ error: "Erro ao remover veículo" });
   }
 };

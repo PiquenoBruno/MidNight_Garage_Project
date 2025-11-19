@@ -20,7 +20,30 @@ const criarUsuario = async (dados: {
   return result.insertId;
 };
 
+const atualizarUsuario = async (
+  id: number,
+  dados: { nome?: string; email?: string; senha?: string; telefone?: string }
+) => {
+  const [result] = await connectionModel.execute(
+    "UPDATE usuarios SET nome = ?, email = ?, senha = ?, telefone = ? WHERE id = ?",
+    [dados.nome, dados.email, dados.senha, dados.telefone, id]
+  ) as [ResultSetHeader, unknown];
+
+  return result.affectedRows; // retorna quantas linhas foram alteradas
+};
+
+const removerUsuario = async (id: number) => {
+  const [result] = await connectionModel.execute(
+    "DELETE FROM usuarios WHERE id = ?",
+    [id]
+  ) as [ResultSetHeader, unknown];
+
+  return result.affectedRows; // retorna quantas linhas foram removidas
+};
+
 export default {
   listarUsuarios,
   criarUsuario,
+  atualizarUsuario,
+  removerUsuario,
 };

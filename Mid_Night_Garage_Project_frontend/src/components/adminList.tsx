@@ -1,23 +1,32 @@
 import React, { useEffect, useState } from "react";
+import { EditarUsuarioModal } from "./formsUsuario"; // reaproveitamos o modal
 import Swal from "sweetalert2";
 
 interface Admin {
   id: number;
   nome: string;
   email: string;
+  telefone: string;
+  senha?: string;
   admin: boolean;
 }
 
-const API_URL = "http://localhost:3001/api/admins";
+const API_URL_ADM = "http://localhost:3001/api/admins";
+const API_URL_USERS = "http://localhost:3001/api/users";
 
 export const AdminList: React.FC = () => {
   const [admins, setAdmins] = useState<Admin[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // controle do modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [adminSelecionado, setAdminSelecionado] = useState<Admin | null>(null);
+  const [metodo, setMetodo] = useState<"POST" | "PUT">("POST");
+
   const fetchAdmins = async () => {
     try {
-      const res = await fetch(API_URL);
+      const res = await fetch(API_URL_ADM);
       if (!res.ok) throw new Error("Erro ao buscar administradores");
       const data = await res.json();
       const apenasAdmins = data.filter((u: Admin) => u.admin);
@@ -33,44 +42,94 @@ export const AdminList: React.FC = () => {
     fetchAdmins();
   }, []);
 
-  const removerAdmin = async (id: number) => {
-    const resultado = await Swal.fire({
-      title: "Tem certeza?",
-      text: "Essa ação excluirá o administrador permanentemente.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Sim, excluir",
-      cancelButtonText: "Cancelar",
-      buttonsStyling: false,
-      customClass: {
-        confirmButton:
-          "bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 focus:outline-none",
-        cancelButton:
-          "bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-600 focus:outline-none",
-      },
-    });
-
-    if (!resultado.isConfirmed) return;
-
+  const salvarAdmin = async (admin: Admin) => {
     try {
-      const res = await fetch(`${API_URL}/${id}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) throw new Error("Erro ao excluir administrador");
+      if (metodo === "POST") {
+        // 1. Cria usuário
+        const resUser = await fetch(API_URL_USERS, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            nome: admin.nome,
+            email: admin.email,
+            telefone: admin.telefone.replace(/\D/g, ""),
+            senha: admin.senha || "123456",
+            admin: false, // cria como usuário comum
+          }),
+        });
+
+        if (!resUser.ok) throw new Error("Erro ao criar usuário");
+        const novoUsuario = await resUser.json();
+
+        // 2. Marca como admin
+        const resAdm = await fetch(API_URL_ADM, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ usuario_id: novoUsuario.id }),
+        });
+
+        if (!resAdm.ok) throw new Error("Erro ao criar administrador");
+      } else {
+        // Atualiza dados do usuário
+        const resUser = await fetch(`${API_URL_USERS}/${admin.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            nome: admin.nome,
+            email: admin.email,
+            telefone: admin.telefone.replace(/\D/g, ""),
+            senha: admin.senha,
+          }),
+        });
+
+        if (!resUser.ok) throw new Error("Erro ao atualizar usuário");
+      }
 
       await fetchAdmins();
-
-      Swal.fire({
-        title: "Excluído!",
-        text: "O administrador foi removido com sucesso.",
-        icon: "success",
-        timer: 2000,
-        showConfirmButton: false,
-      });
+      Swal.fire("Sucesso!", "Administrador salvo com sucesso.", "success");
     } catch (err: any) {
       Swal.fire("Erro", err.message, "error");
     }
   };
+
+const removerAdmin = async (usuario_id: number) => {
+  const resultado = await Swal.fire({
+    title: "Tem certeza?",
+    text: "Essa ação excluirá o administrador permanentemente.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Sim, excluir",
+    cancelButtonText: "Cancelar",
+    buttonsStyling: false,
+    customClass: {
+      confirmButton:
+        "bg-red-600 text-white ml-2 px-4 py-2 rounded hover:bg-red-700 focus:outline-none",
+      cancelButton:
+        "bg-slate-500 text-white ml-2 px-4 py-2 rounded hover:bg-slate-600 focus:outline-none",
+    },
+  });
+
+  if (!resultado.isConfirmed) return;
+
+  try {
+    const res = await fetch(`${API_URL_ADM}/${usuario_id}`, {
+      method: "DELETE",
+    });
+    if (!res.ok) throw new Error("Erro ao excluir administrador");
+
+    await fetchAdmins();
+
+    Swal.fire({
+      title: "Excluído!",
+      text: "O administrador foi removido com sucesso.",
+      icon: "success",
+      timer: 2000,
+      showConfirmButton: false,
+    });
+  } catch (err: any) {
+    Swal.fire("Erro", err.message, "error");
+  }
+};
 
   const total = admins.length;
 
@@ -78,7 +137,21 @@ export const AdminList: React.FC = () => {
     <div className="p-6 space-y-6">
       <header className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-slate-100">Administradores</h1>
-        <button className="bg-slate-600 text-white px-4 py-2 rounded hover:bg-blue-400 transition">
+        <button
+          onClick={() => {
+            setAdminSelecionado({
+              id: 0,
+              nome: "",
+              email: "",
+              telefone: "",
+              senha: "",
+              admin: true,
+            });
+            setMetodo("POST");
+            setIsModalOpen(true);
+          }}
+          className="bg-slate-600 text-white px-4 py-2 rounded hover:bg-blue-400 transition"
+        >
           + Adicionar Admin
         </button>
       </header>
@@ -112,12 +185,22 @@ export const AdminList: React.FC = () => {
                     <tr key={a.id} className="border-b hover:bg-slate-50">
                       <td className="p-3 text-slate-800">{a.nome}</td>
                       <td className="p-3 text-slate-800">{a.email}</td>
-                      <td className="p-3">
+                      <td className="p-3 space-x-2">
+                        <button
+                          onClick={() => {
+                            setAdminSelecionado(a);
+                            setMetodo("PUT");
+                            setIsModalOpen(true);
+                          }}
+                          className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition"
+                        >
+                          Editar
+                        </button>
                         <button
                           onClick={() => removerAdmin(a.id)}
                           className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition"
                         >
-                         Excluir
+                          Excluir
                         </button>
                       </td>
                     </tr>
@@ -127,6 +210,17 @@ export const AdminList: React.FC = () => {
             )}
           </div>
         </>
+      )}
+
+      {/* Modal de edição/adicionar */}
+      {adminSelecionado && (
+        <EditarUsuarioModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          usuario={adminSelecionado}
+          onSave={salvarAdmin}
+          titulo={metodo === "PUT" ? "Editar Administrador" : "Adicionar Administrador"}
+        />
       )}
     </div>
   );

@@ -58,9 +58,9 @@ export const PedidoList: React.FC = () => {
       buttonsStyling: false,
       customClass: {
         confirmButton:
-          "bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 focus:outline-none",
+          "bg-red-600 text-white ml-2 px-4 py-2 rounded hover:bg-red-700 focus:outline-none",
         cancelButton:
-          "bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-600 focus:outline-none",
+          "bg-slate-500 text-white ml-2 px-4 py-2 rounded hover:bg-slate-600 focus:outline-none",
       },
     });
 
@@ -185,7 +185,7 @@ export const PedidoList: React.FC = () => {
                           onClick={() => removerPedido(p.id)}
                           className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition"
                         >
-                          🗑️ Excluir
+                          Excluir
                         </button>
                       </td>
                     </tr>

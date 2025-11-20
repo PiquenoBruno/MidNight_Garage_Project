@@ -1,0 +1,164 @@
+/* style.css */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f4f7f6;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+/* Estilo e posicionamento fixo do contêiner do chat */
+#chat-container {
+    position: fixed;
+    bottom: 100px; /* Acima do botão flutuante */
+    right: 30px;  
+    width: 300px; /* Largura padrão de chat móvel */
+    height: 360px; 
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 999;
+    visibility: hidden; /* O JS muda isso para 'visible' */
+}
+
+#chat-log {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;  /* Permite rolagem */
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Espaço entre as mensagens */
+    background-color: #ffffff;
+}
+
+.message {
+    padding: 12px 16px;
+    border-radius: 18px;
+    line-height: 1.5;
+    max-width: 80%;   
+    word-wrap: break-word;   
+}
+
+.message strong {
+    display: block;  
+    margin-bottom: 4px;
+    font-size: 0.9em;
+    color: #555;
+}
+
+/* Estilo para as mensagens do usuário (azul e alinhadas à direita) */
+.user-message {
+    background-color: #f0f0f0;   
+    color: #333;
+    align-self: flex-end; /* Alinha à direita */
+    border-bottom-right-radius: 4px;   
+}
+
+.user-message strong {
+    color: #e0e0e0;   
+}
+
+/* Estilo para as mensagens do bot (cinza claro e alinhadas à esquerda) */
+.bot-message {
+    background-color: #ffffff;  
+    color: #333;
+    align-self: flex-start;   /* Alinha à esquerda */
+    border-bottom-left-radius: 4px;   
+}
+
+.bot-message strong {
+    color: #eef0f3;  
+}
+
+#input-container {
+    display: flex;
+    border-top: 1px solid #ddd;
+    padding: 15px;
+    background-color: #fff;
+}
+
+#user-input {
+    flex-grow: 1;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    padding: 7px 10px;
+    font-size: 15px;
+    margin-right: 10px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+#user-input:focus {
+    border-color: #333;   
+}
+
+/* Estilo do botão de envio */
+#send-button {
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+/* Adiciona o ícone de seta usando o pseudo-elemento */
+#send-button::before {
+    content: '➤';
+    font-size: 20px;
+    transform: translateX(1px);   
+}
+
+#send-button:active {
+    transform: scale(0.95);
+}
+
+#send-button::before {
+    content: '➤';    
+    font-family: sans-serif;
+    transform: translateX(1px);
+}
+
+/* Estilo e posicionamento do botão flutuante */
+#chat-button {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: #333; /* cor chat */
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s;
+}
+#chat-button:hover {
+    transform: scale(1.1);
+}
+#chat-button img {
+    width: 30px;
+    height: 30px;
+}

@@ -7,12 +7,15 @@ const pool = mysql.createPool({
   database: "garage",
 });
 
-// Listar todos os pedidos com nome do usuário e veículo
+// Listar todos os pedidos com nome e telefone do usuário + veículo
 const listarPedidos = async () => {
   const [rows] = await pool.query(`
     SELECT 
       p.id,
+      p.usuario_id,
       u.nome AS usuario_nome,
+      u.telefone AS usuario_telefone,
+      p.veiculo_id,
       v.name AS veiculo_nome,
       p.data_pedido,
       p.status

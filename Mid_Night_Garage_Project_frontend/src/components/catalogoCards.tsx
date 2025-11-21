@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 
 interface Car {
   id: number
-  type: string        // <-- ADICIONADO
+  type: string
   name: string
   image: string
   brand: string
@@ -41,34 +41,39 @@ export default function CatalogoCards({ cars }: Props) {
   return (
     <>
       {/* Grade de cartões */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-6 bg-background">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 p-6 bg-background font-sans">
         {cars.map((car) => (
           <div
-            key={car.id}  
-            className="bg-text-background rounded-xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 border border-transparent hover:border-destaque"
+            key={car.id}
+            className="bg-text-background rounded-xl shadow-xl transition-all duration-300 border border-transparent hover:border-[#F8FFFF] hover:shadow-[0_0_12px_3px_#F8FFFF] hover:scale-[1.03] cursor-pointer"
+            onClick={() => handleOpenModal(car)}
           >
             <img
-              src={car.image}
+              src={`http://localhost:3001${car.image}`}
               alt={car.name}
               className="w-full h-48 object-cover rounded-t-xl"
             />
 
-            <div className="p-4 text-text-color font-sans">
-              {/* Badge do tipo */}
-              <span className="px-3 py-1 bg-destaque text-background rounded-full text-xs font-bold">
+            <div className="p-4 text-text-color">
+              <span className="px-3 py-1 bg-destaque text-background rounded-full text-xs font-bold tracking-wide">
                 {car.type === 'carro' ? 'Carro' : 'Moto'}
               </span>
 
-              <h2 className="text-2xl font-bold text-destaque mt-2">{car.name}</h2>
+              <h2 className="text-2xl font-bold text-destaque mt-2 uppercase tracking-wide">
+                {car.name}
+              </h2>
               <p className="text-sm text-text-color/60">
                 {car.brand} • {car.year}
               </p>
-              <p className="text-primaria font-semibold mt-2">
+              <p className="text-primaria font-semibold mt-2 text-lg">
                 R$ {car.price.toLocaleString()}
               </p>
               <button
-                onClick={() => handleOpenModal(car)}
-                className="mt-4 bg-primaria text-background px-4 py-2 rounded-full transition-colors hover:brightness-110"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleOpenModal(car)
+                }}
+                className="mt-4 px-4 py-2 rounded-full font-semibold tracking-wide bg-white text-black transition-all duration-300 hover:bg-[#ffe3ae] hover:text-background"
               >
                 Ver detalhes
               </button>
@@ -79,27 +84,26 @@ export default function CatalogoCards({ cars }: Props) {
 
       {/* Modal */}
       {selectedCar && (
-        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 transition-opacity duration-300">
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-100 transition-opacity duration-300">
           <div
             ref={modalRef}
-            className="bg-text-background rounded-xl w-[95vw] h-[90vh] shadow-2xl overflow-hidden flex flex-col md:flex-row font-sans animate-fadeIn"
+            className="bg-text-background rounded-xl w-[95vw] h-[90vh] shadow-2xl overflow-hidden flex flex-col md:flex-row font-sans animate-fadeIn border border-destaque"
           >
-            {/* Imagem grande */}
             <div className="w-full md:w-1/2 h-[90vh]">
               <img
-                src={selectedCar.image}
+                src={`http://localhost:3001${selectedCar.image}`}
                 alt={selectedCar.name}
                 className="w-full h-full object-cover"
               />
             </div>
 
-            {/* Conteúdo */}
             <div className="p-8 flex flex-col justify-between w-full md:w-1/2 text-text-color overflow-y-auto">
               <div>
-                <h2 className="text-4xl font-bold text-destaque mb-4">{selectedCar.name}</h2>
+                <h2 className="text-4xl font-bold text-destaque mb-4 uppercase tracking-wide">
+                  {selectedCar.name}
+                </h2>
 
-                {/* Badge */}
-                <span className="px-4 py-1 bg-destaque text-background rounded-full text-xs font-bold">
+                <span className="px-4 py-1 bg-destaque text-background rounded-full text-xs font-bold tracking-wide">
                   {selectedCar.type === 'carro' ? 'Carro' : 'Moto'}
                 </span>
 
@@ -116,14 +120,14 @@ export default function CatalogoCards({ cars }: Props) {
                 </p>
               </div>
 
-              {/* Botões */}
               <div className="flex flex-col gap-4">
-                <button className="bg-primaria text-background px-6 py-3 rounded-full font-semibold hover:brightness-110 transition">
+                {/* Botão atualizado sem neon */}
+                <button className="bg-primaria text-background px-6 py-3 rounded-full font-semibold transition-transform duration-300 hover:scale-105 hover:bg-[#ffe3ae] tracking-wide text-lg">
                   Adicionar ao carrinho
                 </button>
                 <button
                   onClick={handleCloseModal}
-                  className="text-sm text-destaque hover:underline"
+                  className="text-sm text-destaque hover:underline tracking-wide"
                 >
                   Fechar
                 </button>

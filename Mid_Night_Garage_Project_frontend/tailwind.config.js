@@ -22,11 +22,6 @@ module.exports = {
       zIndex: {
         '100': '100',
       },
-      backgroundImage: {
-        'car-hover': "url('/car01.gif')",
-        'moto-hover': "url('/moto01.gif')",
-        'garage-bg': "url('/Logo_midnight_fundo01.gif')",
-      },
       animation: {
         fadeIn: 'fadeIn 0.3s ease-out',
         fadeOut: 'fadeOut 0.3s ease-in',

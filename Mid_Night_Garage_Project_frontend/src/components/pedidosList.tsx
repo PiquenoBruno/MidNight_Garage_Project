@@ -4,12 +4,15 @@ import Swal from "sweetalert2";
 interface Pedido {
   id: number;
   usuario_nome: string;
+  usuario_telefone: string; // novo campo vindo do backend
   veiculo_nome: string;
   data_pedido: string;
   status: "pendente" | "aprovado" | "cancelado";
 }
 
 const API_URL = "http://localhost:3001/api/pedidos";
+
+
 
 export const PedidoList: React.FC = () => {
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
@@ -91,6 +94,33 @@ export const PedidoList: React.FC = () => {
   const aprovados = pedidos.filter((p) => p.status === "aprovado").length;
   const cancelados = pedidos.filter((p) => p.status === "cancelado").length;
 
+
+  // Função utilitária para aplicar máscara
+const formatarTelefone = (telefone: string) => {
+  // Remove tudo que não for dígito
+  const apenasNumeros = telefone.replace(/\D/g, "");
+
+  // Exemplo de máscara para celular brasileiro (11 dígitos)
+  if (apenasNumeros.length === 11) {
+    return apenasNumeros.replace(
+      /(\d{2})(\d{5})(\d{4})/,
+      "($1) $2-$3"
+    );
+  }
+
+  // Exemplo de máscara para telefone fixo (10 dígitos)
+  if (apenasNumeros.length === 10) {
+    return apenasNumeros.replace(
+      /(\d{2})(\d{4})(\d{4})/,
+      "($1) $2-$3"
+    );
+  }
+
+  // Se não bater com os formatos, retorna o original
+  return telefone;
+};
+
+
   return (
     <div className="p-6 space-y-6">
       <header className="flex justify-between items-center">
@@ -129,6 +159,7 @@ export const PedidoList: React.FC = () => {
                 <thead className="bg-slate-100">
                   <tr>
                     <th className="p-3 text-slate-600">Usuário</th>
+                    <th className="p-3 text-slate-600">Telefone</th>
                     <th className="p-3 text-slate-600">Veículo</th>
                     <th className="p-3 text-slate-600">Data</th>
                     <th className="p-3 text-slate-600">Status</th>
@@ -139,6 +170,7 @@ export const PedidoList: React.FC = () => {
                   {pedidos.map((p) => (
                     <tr key={p.id} className="border-b hover:bg-slate-50">
                       <td className="p-3 text-slate-800">{p.usuario_nome}</td>
+                      <td className="p-3 text-slate-800">{formatarTelefone(p.usuario_telefone)}</td>
                       <td className="p-3 text-slate-800">{p.veiculo_nome}</td>
                       <td className="p-3 text-slate-800">
                         {new Date(p.data_pedido).toLocaleDateString("pt-BR")}

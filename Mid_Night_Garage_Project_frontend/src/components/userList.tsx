@@ -8,48 +8,57 @@ interface Usuario {
   email: string;
   telefone: string;
   senha?: string;
-  admin: boolean; // pode não refletir a realidade se admin é controlado em tabela separada
+  admin: boolean;
 }
 
 interface AdminRef {
-  id: number;        // pode ser o id da relação admin
-  usuario_id: number; // id do usuário que é admin
+  id: number;
+  usuario_id: number;
   nome?: string;
   email?: string;
-  // dependendo do seu listarAdms, pode vir os dados do usuário junto
 }
 
 const API_URL_USERS = "http://localhost:3001/api/users";
 const API_URL_ADMS = "http://localhost:3001/api/admins";
+
+// Função utilitária para formatar telefone
+const formatarTelefone = (telefone: string) => {
+  const apenasNumeros = telefone.replace(/\D/g, "");
+
+  if (apenasNumeros.length === 11) {
+    // (XX) XXXXX-XXXX
+    return apenasNumeros.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+  } else if (apenasNumeros.length === 10) {
+    // (XX) XXXX-XXXX
+    return apenasNumeros.replace(/(\d{2})(\d{4})(\d{4})/, "($1) $2-$3");
+  }
+
+  return telefone;
+};
 
 export const UserList: React.FC = () => {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // controle do modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [usuarioSelecionado, setUsuarioSelecionado] = useState<Usuario | null>(null);
   const [metodo, setMetodo] = useState<"POST" | "PUT">("POST");
 
   const fetchUsuarios = async () => {
     try {
-      // busca todos os usuários
       const resUsers = await fetch(API_URL_USERS);
       if (!resUsers.ok) throw new Error("Erro ao buscar usuários");
       const dataUsers: Usuario[] = await resUsers.json();
 
-      // busca a lista de admins (apenas referências)
       const resAdms = await fetch(API_URL_ADMS);
       if (!resAdms.ok) throw new Error("Erro ao buscar administradores");
       const dataAdms: AdminRef[] = await resAdms.json();
 
-      // cria um conjunto dos ids de usuários que são admins
       const adminIds = new Set<number>(
         dataAdms.map((a) => (typeof a.usuario_id === "number" ? a.usuario_id : a.id))
       );
 
-      // filtra usuários removendo quem está em adminIds
       const apenasComuns = dataUsers.filter((u) => !adminIds.has(u.id));
       setUsuarios(apenasComuns);
     } catch (err: any) {
@@ -70,7 +79,7 @@ export const UserList: React.FC = () => {
         email: usuario.email,
         telefone: usuario.telefone.replace(/\D/g, ""),
         senha: usuario.senha || "123456",
-        admin: false, // força comum; admins são tratados na lista de admins
+        admin: false,
       };
 
       const res = await fetch(
@@ -99,43 +108,42 @@ export const UserList: React.FC = () => {
     }
   };
 
-const removerUsuario = async (id: number) => {
-  const resultado = await Swal.fire({
-    title: "Tem certeza?",
-    text: "Essa ação excluirá o usuário permanentemente.",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonText: "Sim, excluir",
-    cancelButtonText: "Cancelar",
-    buttonsStyling: false,
-    customClass: {
-      confirmButton:
-        "bg-red-600 text-white ml-2 px-4 py-2 rounded hover:bg-red-700 focus:outline-none",
-      cancelButton:
-        "bg-slate-500 text-white ml-2 px-4 py-2 rounded hover:bg-slate-600 focus:outline-none",
-    },
-  });
-
-  if (!resultado.isConfirmed) return;
-
-  try {
-    const res = await fetch(`${API_URL_USERS}/${id}`, { method: "DELETE" });
-    if (!res.ok) throw new Error("Erro ao excluir usuário");
-
-    await fetchUsuarios();
-
-    Swal.fire({
-      title: "Excluído!",
-      text: "O usuário foi removido com sucesso.",
-      icon: "success",
-      timer: 2000,
-      showConfirmButton: false,
+  const removerUsuario = async (id: number) => {
+    const resultado = await Swal.fire({
+      title: "Tem certeza?",
+      text: "Essa ação excluirá o usuário permanentemente.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sim, excluir",
+      cancelButtonText: "Cancelar",
+      buttonsStyling: false,
+      customClass: {
+        confirmButton:
+          "bg-red-600 text-white ml-2 px-4 py-2 rounded hover:bg-red-700 focus:outline-none",
+        cancelButton:
+          "bg-slate-500 text-white ml-2 px-4 py-2 rounded hover:bg-slate-600 focus:outline-none",
+      },
     });
-  } catch (err: any) {
-    Swal.fire("Erro", err.message, "error");
-  }
-};
 
+    if (!resultado.isConfirmed) return;
+
+    try {
+      const res = await fetch(`${API_URL_USERS}/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Erro ao excluir usuário");
+
+      await fetchUsuarios();
+
+      Swal.fire({
+        title: "Excluído!",
+        text: "O usuário foi removido com sucesso.",
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    } catch (err: any) {
+      Swal.fire("Erro", err.message, "error");
+    }
+  };
 
   const total = usuarios.length;
 
@@ -192,7 +200,9 @@ const removerUsuario = async (id: number) => {
                     <tr key={u.id} className="border-b hover:bg-slate-50">
                       <td className="p-3 text-slate-800">{u.nome}</td>
                       <td className="p-3 text-slate-800">{u.email}</td>
-                      <td className="p-3 text-slate-800">{u.telefone}</td>
+                      <td className="p-3 text-slate-800">
+                        {formatarTelefone(u.telefone)}
+                      </td>
                       <td className="p-3 space-x-2">
                         <button
                           onClick={() => {

@@ -3,16 +3,14 @@ import Swal from "sweetalert2";
 
 interface Pedido {
   id: number;
-  usuario_nome: string;
-  usuario_telefone: string; // novo campo vindo do backend
-  veiculo_nome: string;
+  usuario_nome?: string;
+  usuario_telefone?: string; // pode vir undefined do backend
+  veiculo_nome?: string;
   data_pedido: string;
   status: "pendente" | "aprovado" | "cancelado";
 }
 
 const API_URL = "http://localhost:3001/api/pedidos";
-
-
 
 export const PedidoList: React.FC = () => {
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
@@ -61,9 +59,9 @@ export const PedidoList: React.FC = () => {
       buttonsStyling: false,
       customClass: {
         confirmButton:
-          "bg-red-600 text-white ml-2 px-4 py-2 rounded hover:bg-red-700 focus:outline-none",
+          "bg-red-600 text-white ml-2 px-4 py-2 rounded hover:bg-red-700",
         cancelButton:
-          "bg-slate-500 text-white ml-2 px-4 py-2 rounded hover:bg-slate-600 focus:outline-none",
+          "bg-slate-500 text-white ml-2 px-4 py-2 rounded hover:bg-slate-600",
       },
     });
 
@@ -89,37 +87,27 @@ export const PedidoList: React.FC = () => {
     }
   };
 
+  // 🔧 TELEFONE SEGURO (NÃO QUEBRA MAIS)
+  const formatarTelefone = (telefone?: string) => {
+    if (!telefone) return "Não informado";
+
+    const apenasNumeros = telefone.replace(/\D/g, "");
+
+    if (apenasNumeros.length === 11) {
+      return apenasNumeros.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+    }
+
+    if (apenasNumeros.length === 10) {
+      return apenasNumeros.replace(/(\d{2})(\d{4})(\d{4})/, "($1) $2-$3");
+    }
+
+    return telefone;
+  };
+
   const total = pedidos.length;
   const pendentes = pedidos.filter((p) => p.status === "pendente").length;
   const aprovados = pedidos.filter((p) => p.status === "aprovado").length;
   const cancelados = pedidos.filter((p) => p.status === "cancelado").length;
-
-
-  // Função utilitária para aplicar máscara
-const formatarTelefone = (telefone: string) => {
-  // Remove tudo que não for dígito
-  const apenasNumeros = telefone.replace(/\D/g, "");
-
-  // Exemplo de máscara para celular brasileiro (11 dígitos)
-  if (apenasNumeros.length === 11) {
-    return apenasNumeros.replace(
-      /(\d{2})(\d{5})(\d{4})/,
-      "($1) $2-$3"
-    );
-  }
-
-  // Exemplo de máscara para telefone fixo (10 dígitos)
-  if (apenasNumeros.length === 10) {
-    return apenasNumeros.replace(
-      /(\d{2})(\d{4})(\d{4})/,
-      "($1) $2-$3"
-    );
-  }
-
-  // Se não bater com os formatos, retorna o original
-  return telefone;
-};
-
 
   return (
     <div className="p-6 space-y-6">
@@ -132,6 +120,7 @@ const formatarTelefone = (telefone: string) => {
 
       {!loading && !error && (
         <>
+          {/* Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-slate-50 border border-slate-200 shadow rounded p-3">
               <h3 className="text-slate-500">Total</h3>
@@ -151,6 +140,7 @@ const formatarTelefone = (telefone: string) => {
             </div>
           </div>
 
+          {/* Tabela */}
           <div className="bg-slate-50 border border-slate-200 shadow rounded overflow-hidden">
             {pedidos.length === 0 ? (
               <p className="p-4 text-slate-500">Nenhum pedido encontrado.</p>
@@ -169,12 +159,22 @@ const formatarTelefone = (telefone: string) => {
                 <tbody>
                   {pedidos.map((p) => (
                     <tr key={p.id} className="border-b hover:bg-slate-50">
-                      <td className="p-3 text-slate-800">{p.usuario_nome}</td>
-                      <td className="p-3 text-slate-800">{formatarTelefone(p.usuario_telefone)}</td>
-                      <td className="p-3 text-slate-800">{p.veiculo_nome}</td>
+                      <td className="p-3 text-slate-800">
+                        {p.usuario_nome ?? "Não informado"}
+                      </td>
+
+                      <td className="p-3 text-slate-800">
+                        {formatarTelefone(p.usuario_telefone)}
+                      </td>
+
+                      <td className="p-3 text-slate-800">
+                        {p.veiculo_nome ?? "Não informado"}
+                      </td>
+
                       <td className="p-3 text-slate-800">
                         {new Date(p.data_pedido).toLocaleDateString("pt-BR")}
                       </td>
+
                       <td className="p-3">
                         <span
                           className={`px-2 py-1 rounded text-white text-sm font-semibold ${
@@ -188,34 +188,36 @@ const formatarTelefone = (telefone: string) => {
                           {p.status.charAt(0).toUpperCase() + p.status.slice(1)}
                         </span>
                       </td>
+
                       <td className="p-3 space-x-2">
-                        {p.status === "pendente" && (
+                        {p.status === "pendente" ? (
                           <>
                             <button
                               onClick={() => atualizarStatus(p.id, "aprovado")}
-                              className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition"
+                              className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
                             >
                               Aprovar
                             </button>
+
                             <button
                               onClick={() => atualizarStatus(p.id, "cancelado")}
-                              className="bg-rose-500 text-white px-3 py-1 rounded hover:bg-rose-600 transition"
+                              className="bg-rose-500 text-white px-3 py-1 rounded hover:bg-rose-600"
                             >
                               Cancelar
                             </button>
                           </>
-                        )}
-                        {p.status !== "pendente" && (
+                        ) : (
                           <button
                             onClick={() => atualizarStatus(p.id, "pendente")}
-                            className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 transition"
+                            className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
                           >
-                            Reverter para Pendente
+                            Reverter
                           </button>
                         )}
+
                         <button
                           onClick={() => removerPedido(p.id)}
-                          className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition"
+                          className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
                         >
                           Excluir
                         </button>

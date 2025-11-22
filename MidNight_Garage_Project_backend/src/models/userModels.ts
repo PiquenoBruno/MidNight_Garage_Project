@@ -1,5 +1,5 @@
 import { connectionModel } from "./connectionModels";
-import { ResultSetHeader } from "mysql2";
+import { ResultSetHeader, RowDataPacket } from "mysql2";
 
 const listarUsuarios = async () => {
   const [rows] = await connectionModel.execute("SELECT * FROM usuarios");
@@ -41,9 +41,20 @@ const removerUsuario = async (id: number) => {
   return result.affectedRows; // retorna quantas linhas foram removidas
 };
 
+// 🔑 novo método para login
+const buscarPorEmail = async (email: string) => {
+  const [rows] = await connectionModel.execute(
+    "SELECT * FROM usuarios WHERE email = ?",
+    [email]
+  ) as [RowDataPacket[], unknown];
+
+  return rows[0]; // retorna o primeiro usuário encontrado
+};
+
 export default {
   listarUsuarios,
   criarUsuario,
   atualizarUsuario,
   removerUsuario,
+  buscarPorEmail, // agora disponível para o controller
 };

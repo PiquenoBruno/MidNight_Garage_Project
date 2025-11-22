@@ -12,3 +12,5 @@ routerPedidos.get("/", listarPedidos);
 routerPedidos.post("/", criarPedido);
 routerPedidos.put("/:id", atualizarStatus);
 routerPedidos.delete("/:id", removerPedido);
+
+export default routerPedidos;

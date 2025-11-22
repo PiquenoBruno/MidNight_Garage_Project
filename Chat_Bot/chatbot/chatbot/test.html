@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <input type="text" id="argumento">
+    <button id="btn_enviar_argumento">Enviar</button>
+    <script>
+        const texto = document.getElementById("btn_enviar_argumento")
+        texto.addEventListener("click", async () => {
+            const argumento = document.getElementById("argumento").value
+            
+            const body  = {
+                clienteArgumento: argumento
+            }
+
+            const enviarArgumento = await fetch("http://localhost:3000/chatbot", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'Application/json'
+                },
+                body: JSON.stringify(body)
+            })
+            const retorno = await enviarArgumento.json()
+            alert(retorno)
+            console.log(retorno)
+            
+        })
+        
+
+    </script>
+</body>
+</html>

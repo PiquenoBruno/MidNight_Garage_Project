@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import type { FormEvent, ChangeEvent } from "react";
 
 import InputField from "./inputField";
 import Button from "./button";
+import { AuthContext } from "../context/AuthContext";
 
 export default function LoginForm() {
+  const auth = useContext(AuthContext);
+
   const [email, setEmail] = useState<string>("");
   const [senha, setSenha] = useState<string>("");
   const [error, setError] = useState<string>("");
@@ -14,7 +17,7 @@ export default function LoginForm() {
     return regex.test(email);
   };
 
-  const handleLogin = (e: FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!email || !senha) {
@@ -28,8 +31,16 @@ export default function LoginForm() {
     }
 
     setError("");
-    console.log("Login:", email, senha);
 
+    try {
+      // chama o login do contexto (que já fala com o backend)
+      await auth?.login(email, senha);
+
+      // se quiser redirecionar após login:
+      window.location.href = "/profile";
+    } catch {
+      setError("Erro ao fazer login. Verifique suas credenciais.");
+    }
   };
 
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -63,6 +74,4 @@ export default function LoginForm() {
       </div>
     </form>
   );
-
-  
 }

@@ -10,6 +10,12 @@ export default function HeaderAdmin() {
         <h2 className="text-lg font-medium text-secundaria tracking-wide">Garage / Admin</h2>
       </div>
 
+        <nav className="hidden sm:flex justify-center gap-6 mt-6 text-white text-sm font-medium">
+          <a href="/" className="hover:text-destaque">Home</a>
+          <a href="#" className="hover:text-destaque">Conta</a>
+        </nav>
+
+
       {/* Linha separadora */}
       <div className="border-t border-gray-300"></div>
     </header>

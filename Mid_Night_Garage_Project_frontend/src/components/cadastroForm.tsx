@@ -7,9 +7,11 @@ import Button from "./button";
 export default function CadastroForm() {
   const [nome, setNome] = useState<string>("");
   const [email, setEmail] = useState<string>("");
+  const [telefone, setTelefone] = useState<string>(""); // campo obrigatório
   const [senha, setSenha] = useState<string>("");
   const [confirmarSenha, setConfirmarSenha] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const [success, setSuccess] = useState<string>("");
 
   const validateEmail = (email: string): boolean => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -19,7 +21,7 @@ export default function CadastroForm() {
   const handleCadastro = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!nome || !email || !senha || !confirmarSenha) {
+    if (!nome || !email || !telefone || !senha || !confirmarSenha) {
       setError("Preencha todos os campos.");
       return;
     }
@@ -35,48 +37,40 @@ export default function CadastroForm() {
     }
 
     setError("");
-    console.log("Cadastro:", { nome, email, senha });
+    setSuccess("");
 
-    try {
-      const response = await fetch("https://seu-backend.com/api/cadastro", {
+    try {  
+      const response = await fetch("http://localhost:3001/api/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ nome, email, senha }),
+        body: JSON.stringify({ nome, email, telefone, senha }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const data = await response.json();
-        setError(data.message || "Erro ao cadastrar.");
+        setError(data.error || "Erro ao cadastrar.");
         return;
       }
 
-      console.log("Usuário cadastrado com sucesso!");
+      setSuccess("Usuário cadastrado com sucesso!");
+      console.log("Usuário cadastrado:", data);
+
+      // limpar campos
       setNome("");
       setEmail("");
+      setTelefone("");
       setSenha("");
       setConfirmarSenha("");
+
+      // opcional: redirecionar para login
+      window.location.href = "/login";
     } catch (err) {
       setError("Erro de conexão com o servidor.");
       console.error(err);
     }
-  };
-
-  const handleNomeChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setNome(e.target.value);
-  };
-
-  const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-  };
-
-  const handleSenhaChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSenha(e.target.value);
-  };
-
-  const handleConfirmarSenhaChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setConfirmarSenha(e.target.value);
   };
 
   return (
@@ -85,28 +79,38 @@ export default function CadastroForm() {
         label="NOME"
         type="text"
         value={nome}
-        onChange={handleNomeChange}
+        onChange={(e: ChangeEvent<HTMLInputElement>) => setNome(e.target.value)}
       />
       <InputField
         label="EMAIL"
         type="email"
         value={email}
-        onChange={handleEmailChange}
+        onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+      />
+      <InputField
+        label="TELEFONE"
+        type="text"
+        value={telefone}
+        onChange={(e: ChangeEvent<HTMLInputElement>) => setTelefone(e.target.value)}
       />
       <InputField
         label="SENHA"
         type="password"
         value={senha}
-        onChange={handleSenhaChange}
+        onChange={(e: ChangeEvent<HTMLInputElement>) => setSenha(e.target.value)}
       />
       <InputField
         label="CONFIRMAR SENHA"
         type="password"
         value={confirmarSenha}
-        onChange={handleConfirmarSenhaChange}
+        onChange={(e: ChangeEvent<HTMLInputElement>) => setConfirmarSenha(e.target.value)}
       />
+
       {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
+      {success && <p className="text-green-500 text-sm mb-2">{success}</p>}
+
       <Button text="CADASTRAR" />
+
       <div className="text-center mt-4">
         <a href="/login" className="text-sm text-primaria hover:underline">
           JÁ TEM CONTA? ENTRAR

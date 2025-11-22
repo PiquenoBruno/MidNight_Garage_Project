@@ -227,7 +227,7 @@ export const PedidoList: React.FC = () => {
                 </tbody>
               </table>
             )}
-          </div>
+          </div> 
         </>
       )}
     </div>

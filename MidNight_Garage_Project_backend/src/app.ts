@@ -7,26 +7,29 @@ import { router } from "./routers/router";
 import { routerVeiculo } from "./routers/routersVeiculos";
 import { routerUsers } from "./routers/routersUsers";
 import { routerAdmins } from "./routers/routersAdmins";
-import { routerPedidos } from "./routers/routersPedido"; // 🆕 novo router
+import { routerPedidos } from "./routers/routersPedido";
+import routerLogin from "./routers/routerLogin"; // 🆕 rota de login
 
 export const app = express();
 
 // Middlewares globais
-app.use(cors()); // Permite chamadas do frontend
-app.use(express.json()); // Permite trabalhar com JSON no body
+app.use(cors());
+app.use(express.json());
 
-// Servir arquivos estáticos da pasta /public/images
-// Exemplo: http://localhost:3001/images/carro123.jpg
+// Servir imagens
 app.use("/images", express.static(path.join(__dirname, "../public/images")));
 
-// Servir arquivos da pasta /static (se você usa para frontend ou assets)
+// Servir arquivos estáticos
 app.use(express.static(path.join(__dirname, "static")));
 
-// Rotas organizadas com prefixos
-app.use("/api", router);                  // Rotas gerais
-app.use("/api/veiculos", routerVeiculo);  // Rotas de veículos (carros e motos)
-app.use("/api/users", routerUsers);       // Rotas de usuários
-app.use("/api/admins", routerAdmins);     // Rotas de administradores
-app.use("/api/pedidos", routerPedidos);   // 🆕 Rotas de pedidos
+// ROTAS
+app.use("/api", router);
+app.use("/api/veiculos", routerVeiculo);
+app.use("/api/users", routerUsers);
+app.use("/api/admins", routerAdmins);
+app.use("/api/pedidos", routerPedidos);
+
+// 🆕 ROTA DE LOGIN (SEM PREFIXO /api — como você pediu)
+app.use("/login", routerLogin);
 
 export default app;

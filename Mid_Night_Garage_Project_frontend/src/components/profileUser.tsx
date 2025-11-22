@@ -3,48 +3,101 @@ import { AuthContext } from "../context/AuthContext";
 
 interface Pedido {
   id: number;
-  descricao: string;
-  valor: number;
-  status: string;
+  usuario_nome: string;
+  usuario_telefone?: string;
+  veiculo_nome?: string;
+  data_pedido: string;
+  status: "pendente" | "aprovado" | "cancelado" | "concluído" | string;
 }
 
 export default function Profile() {
   const auth = useContext(AuthContext);
+
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchPedidos = async () => {
+    try {
+      if (!auth?.user?.name) return;
+
+      const response = await fetch("http://localhost:3001/api/pedidos", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if (!response.ok) throw new Error("Erro ao buscar pedidos");
+
+      const data: Pedido[] = await response.json();
+
+      const pedidosUsuario = data.filter(
+        (p) => p.usuario_nome === auth.user?.name
+      );
+
+      setPedidos(pedidosUsuario);
+    } catch (err: any) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchPedidos = async () => {
-      if (!auth?.user) return;
-
-      try {
-        const response = await fetch(
-          `http://localhost:3001/api/users/${auth.user.id}/pedidos`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
-        const data = await response.json();
-        setPedidos(data);
-      } catch (err) {
-        console.error("Erro ao carregar pedidos:", err);
-      }
-    };
-
-    fetchPedidos();
+    if (auth?.user) fetchPedidos();
   }, [auth?.user]);
+
+  const atualizarStatus = async (id: number, novoStatus: string) => {
+    try {
+      const res = await fetch(`http://localhost:3001/api/pedidos/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({ status: novoStatus }),
+      });
+
+      if (!res.ok) throw new Error("Erro ao atualizar pedido");
+
+      await fetchPedidos();
+    } catch (err: any) {
+      setError(err instanceof Error ? err.message : String(err));
+    }
+  };
+
+  const excluirPedido = async (id: number) => {
+    const confirma = window.confirm(
+      "Tem certeza que deseja excluir este pedido? Esta ação não pode ser desfeita."
+    );
+    if (!confirma) return;
+
+    try {
+      const res = await fetch(`http://localhost:3001/api/pedidos/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if (!res.ok) throw new Error("Erro ao excluir pedido");
+
+      await fetchPedidos();
+    } catch (err: any) {
+      setError(err instanceof Error ? err.message : String(err));
+    }
+  };
 
   if (!auth?.user) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-        <div className="bg-white shadow-md rounded p-6 w-96 text-center">
-          <h2 className="text-xl font-bold text-gray-700 mb-4">
+      <div className="flex items-center justify-center h-screen bg-background">
+        <div className="bg-text-background shadow-xl rounded-xl p-8 w-96 text-center">
+          <h2 className="text-2xl font-bold text-destaque mb-4">
             Você não está logado
           </h2>
           <a
             href="/login"
-            className="text-blue-500 hover:underline font-medium"
+            className="text-primaria hover:underline font-semibold transition"
           >
             Ir para Login
           </a>
@@ -54,53 +107,110 @@ export default function Profile() {
   }
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gradient-to-br from-blue-50 to-blue-100">
-      <div className="bg-white shadow-2xl rounded-2xl p-10 w-[500px]">
+    <div className="flex justify-center items-center h-screen bg-background font-sans">
+      <div className="bg-text-background shadow-2xl rounded-xl p-10 w-[600px] animate-fadeIn">
         <div className="flex flex-col items-center">
           {/* Avatar */}
-          <div className="w-24 h-24 rounded-full bg-blue-500 flex items-center justify-center text-white text-3xl font-bold mb-6 shadow-md">
-            {auth.user.name.charAt(0).toUpperCase()}
+          <div className="w-24 h-24 rounded-full bg-destaque flex items-center justify-center text-background text-3xl font-bold mb-6 shadow-lg ring-4 ring-primaria">
+            {auth.user?.name.charAt(0).toUpperCase()}
           </div>
 
           {/* Nome e Email */}
-          <h1 className="text-2xl font-extrabold text-gray-800 mb-1">
-            {auth.user.name}
+          <h1 className="text-2xl font-extrabold text-destaque uppercase mb-1">
+            {auth.user?.name}
           </h1>
-          <p className="text-gray-500 mb-6">{auth.user.email}</p>
+          <p className="text-text-color/70 mb-6">{auth.user?.email}</p>
 
-          {/* Pedidos */}
-          <h2 className="text-lg font-semibold text-gray-700 mb-3">
+          {/* Título */}
+          <h2 className="text-lg font-semibold text-destaque mb-3 uppercase">
             Meus Pedidos
           </h2>
-          <ul className="w-full space-y-3">
-            {pedidos.length === 0 ? (
-              <p className="text-gray-400 text-sm">Nenhum pedido encontrado.</p>
-            ) : (
-              pedidos.map((pedido) => (
-                <li
-                  key={pedido.id}
-                  className="border rounded-lg p-4 shadow-sm flex justify-between items-center"
-                >
-                  <div>
-                    <p className="font-medium text-gray-800">
-                      {pedido.descricao}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      Status: {pedido.status}
-                    </p>
-                  </div>
-                  <span className="text-blue-600 font-bold">
-                    R$ {pedido.valor.toFixed(2)}
-                  </span>
-                </li>
-              ))
-            )}
-          </ul>
 
-          {/* Botão de logout */}
+          {loading && (
+            <p className="text-text-color/50 text-sm text-center">
+              Carregando pedidos...
+            </p>
+          )}
+
+          {error && (
+            <p className="text-red-500 text-sm text-center">Erro: {error}</p>
+          )}
+
+          {!loading && !error && (
+            <ul className="w-full space-y-3">
+              {pedidos.length === 0 ? (
+                <p className="text-text-color/50 text-sm text-center">
+                  Nenhum pedido encontrado.
+                </p>
+              ) : (
+                pedidos.map((pedido) => (
+                  <li
+                    key={pedido.id}
+                    className="border border-primaria/30 rounded-xl p-4 shadow-sm flex justify-between items-center hover:shadow-md transition"
+                  >
+                    <div>
+                      <p className="font-semibold text-text-color">
+                        {pedido.veiculo_nome ?? "Sem descrição"}
+                      </p>
+
+                      <p
+                        className={`text-sm font-bold ${
+                          pedido.status === "aprovado"
+                            ? "text-green-400"
+                            : pedido.status === "pendente"
+                            ? "text-yellow-400"
+                            : "text-rose-400"
+                        }`}
+                      >
+                        Status: {pedido.status}
+                      </p>
+
+                      <p className="text-sm text-text-color/70">
+                        {new Date(pedido.data_pedido).toLocaleDateString("pt-BR")}
+                      </p>
+                    </div>
+
+                    <div className="space-x-2">
+                      {pedido.status === "pendente" && (
+                        <button
+                          onClick={() => atualizarStatus(pedido.id, "cancelado")}
+                          className="bg-rose-600 text-white px-4 py-1 rounded hover:bg-rose-700"
+                          type="button"
+                        >
+                          Cancelar
+                        </button>
+                      )}
+
+                      {pedido.status === "cancelado" && (
+                        <>
+                          <button
+                            onClick={() => atualizarStatus(pedido.id, "pendente")}
+                            className="bg-yellow-500 text-white px-4 py-1 rounded hover:bg-yellow-600"
+                            type="button"
+                          >
+                            Reverter
+                          </button>
+
+                          <button
+                            onClick={() => excluirPedido(pedido.id)}
+                            className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700"
+                            type="button"
+                          >
+                            Excluir
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </li>
+                ))
+              )}
+            </ul>
+          )}
+
+          {/* Botão de Logout */}
           <button
             onClick={auth.logout}
-            className="mt-6 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition shadow"
+            className="mt-6 bg-primaria text-background px-6 py-2 rounded-full font-semibold hover:bg-[#ffe3ae] transition shadow-md"
           >
             Sair
           </button>

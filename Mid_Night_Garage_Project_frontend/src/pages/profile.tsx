@@ -1,6 +1,6 @@
 import Header from '../components/header';
 import Footer from '../components/footer';
-import Profile from '../components/loginPage';
+import Profile from '../components/profileUser';
 
 export default function Home() {
   return (

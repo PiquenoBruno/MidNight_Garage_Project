@@ -1,61 +1,97 @@
-import { Request, Response } from "express";
-import pedidoService from "../models/pedidoModels";
+import { connectionModel } from "../models/connectionModels";
+import { ResultSetHeader, RowDataPacket } from "mysql2";
 
-// GET /api/pedidos
-export const listarPedidos = async (req: Request, res: Response) => {
-  try {
-    const pedidos = await pedidoService.listarPedidos();
-    res.json(pedidos);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ erro: "Erro ao listar pedidos" });
-  }
+// ========================================
+// LISTAR TODOS OS PEDIDOS
+// ========================================
+const listarPedidos = async () => {
+  const [rows] = await connectionModel.execute<RowDataPacket[]>(`
+    SELECT 
+      p.id,
+      u.nome AS usuario_nome,
+      u.telefone AS usuario_telefone,
+      v.name AS veiculo_nome,
+      p.data_pedido,
+      p.status
+    FROM pedidos p
+    LEFT JOIN usuarios u ON u.id = p.usuario_id
+    LEFT JOIN veiculos v ON v.id = p.veiculo_id
+    ORDER BY p.id DESC
+  `);
+
+  return rows;
 };
 
-// POST /api/pedidos
-export const criarPedido = async (req: Request, res: Response) => {
-  const { usuario_id, veiculo_id } = req.body;
+// ========================================
+// LISTAR PEDIDOS POR USUÁRIO
+// ========================================
+const listarPedidosPorUsuario = async (usuarioId: number) => {
+  const [rows] = await connectionModel.execute<RowDataPacket[]>(
+    `
+    SELECT 
+      p.id,
+      u.nome AS usuario_nome,
+      u.telefone AS usuario_telefone,
+      v.name AS veiculo_nome,
+      p.data_pedido,
+      p.status
+    FROM pedidos p
+    LEFT JOIN usuarios u ON u.id = p.usuario_id
+    LEFT JOIN veiculos v ON v.id = p.veiculo_id
+    WHERE p.usuario_id = ?
+    ORDER BY p.id DESC
+  `,
+    [usuarioId]
+  );
 
-  if (!usuario_id || !veiculo_id) {
-    return res.status(400).json({ erro: "Campos obrigatórios ausentes" });
-  }
-
-  try {
-    const novo = await pedidoService.criarPedido(usuario_id, veiculo_id);
-    res.status(201).json(novo);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ erro: "Erro ao criar pedido" });
-  }
+  return rows;
 };
 
-// PUT /api/pedidos/:id
-export const atualizarStatus = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { status } = req.body;
+// ========================================
+// CRIAR NOVO PEDIDO
+// ========================================
+const criarPedido = async (usuario_id: number, veiculo_id: number) => {
+  const [result] = await connectionModel.execute<ResultSetHeader>(
+    "INSERT INTO pedidos (usuario_id, veiculo_id, data_pedido, status) VALUES (?, ?, NOW(), 'pendente')",
+    [usuario_id, veiculo_id]
+  );
 
-  if (!status) {
-    return res.status(400).json({ erro: "Status é obrigatório" });
-  }
-
-  try {
-    const atualizado = await pedidoService.atualizarStatus(Number(id), status);
-    res.json(atualizado);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ erro: "Erro ao atualizar status" });
-  }
+  return {
+    id: result.insertId,
+    usuario_id,
+    veiculo_id,
+    status: "pendente",
+  };
 };
 
-// DELETE /api/pedidos/:id
-export const removerPedido = async (req: Request, res: Response) => {
-  const { id } = req.params;
+// ========================================
+// ATUALIZAR STATUS DO PEDIDO
+// ========================================
+const atualizarStatus = async (id: number, status: string) => {
+  const [result] = await connectionModel.execute<ResultSetHeader>(
+    "UPDATE pedidos SET status = ? WHERE id = ?",
+    [status, id]
+  );
 
-  try {
-    const removido = await pedidoService.removerPedido(Number(id));
-    res.json(removido);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ erro: "Erro ao remover pedido" });
-  }
+  return { affectedRows: result.affectedRows, id, status };
+};
+
+// ========================================
+// REMOVER PEDIDO
+// ========================================
+const removerPedido = async (id: number) => {
+  const [result] = await connectionModel.execute<ResultSetHeader>(
+    "DELETE FROM pedidos WHERE id = ?",
+    [id]
+  );
+
+  return { affectedRows: result.affectedRows, id };
+};
+
+export default {
+  listarPedidos,
+  listarPedidosPorUsuario,
+  criarPedido,
+  atualizarStatus,
+  removerPedido,
 };

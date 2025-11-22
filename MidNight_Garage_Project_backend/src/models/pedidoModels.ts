@@ -1,17 +1,16 @@
 import { connectionModel } from "./connectionModels";
 import { ResultSetHeader } from "mysql2";
 
-// Listar todos os pedidos com JOIN
+// ========================================
+// LISTAR TODOS OS PEDIDOS
+// ========================================
 const listarPedidos = async () => {
   const [rows] = await connectionModel.execute(`
     SELECT 
       p.id,
       u.nome AS usuario_nome,
       u.telefone AS usuario_telefone,
-
-      -- CORRIGIDO AQUI (antes era v.nome)
       v.name AS veiculo_nome,
-
       p.data_pedido,
       p.status
     FROM pedidos p
@@ -23,7 +22,34 @@ const listarPedidos = async () => {
   return rows;
 };
 
-// Criar novo pedido
+// ========================================
+// LISTAR PEDIDOS POR USUÁRIO (NOVO)
+// ========================================
+const listarPedidosPorUsuario = async (usuarioId: number) => {
+  const [rows] = await connectionModel.execute(
+    `
+    SELECT 
+      p.id,
+      u.nome AS usuario_nome,
+      u.telefone AS usuario_telefone,
+      v.name AS veiculo_nome,
+      p.data_pedido,
+      p.status
+    FROM pedidos p
+    LEFT JOIN usuarios u ON u.id = p.usuario_id
+    LEFT JOIN veiculos v ON v.id = p.veiculo_id
+    WHERE p.usuario_id = ?
+    ORDER BY p.id DESC
+  `,
+    [usuarioId]
+  );
+
+  return rows;
+};
+
+// ========================================
+// CRIAR NOVO PEDIDO
+// ========================================
 const criarPedido = async (usuario_id: number, veiculo_id: number) => {
   const [result] = await connectionModel.execute(
     "INSERT INTO pedidos (usuario_id, veiculo_id, data_pedido, status) VALUES (?, ?, NOW(), 'pendente')",
@@ -38,7 +64,9 @@ const criarPedido = async (usuario_id: number, veiculo_id: number) => {
   };
 };
 
-// Atualizar status
+// ========================================
+// ATUALIZAR STATUS DO PEDIDO
+// ========================================
 const atualizarStatus = async (id: number, status: string) => {
   const [result] = await connectionModel.execute(
     "UPDATE pedidos SET status = ? WHERE id = ?",
@@ -48,7 +76,9 @@ const atualizarStatus = async (id: number, status: string) => {
   return { affectedRows: result.affectedRows, id, status };
 };
 
-// Remover pedido
+// ========================================
+// REMOVER PEDIDO
+// ========================================
 const removerPedido = async (id: number) => {
   const [result] = await connectionModel.execute(
     "DELETE FROM pedidos WHERE id = ?",
@@ -60,6 +90,7 @@ const removerPedido = async (id: number) => {
 
 export default {
   listarPedidos,
+  listarPedidosPorUsuario,
   criarPedido,
   atualizarStatus,
   removerPedido,

@@ -11,7 +11,11 @@
   "contato": [
     "qual telefone de vocês",
     "como falo com o suporte",
-    "tem whatsapp"
+    "tem whatsapp",
+    "qual o contato de vcs",
+    "qual o contado de voceis",
+    "como entro em contato",
+    "qual o email de voceis"
   ],
   "veiculo": [
     "quero saber da Ferrari 2022",
@@ -33,13 +37,17 @@
     "vocês têm Alfa Romeo Giulia Quadrifoglio",
     "quanto custa o Dodge Challenger SRT",
     "tem Ford Mustang Shelby GT500",
-    "qual preço da Toyota Supra"
+    "qual preço da Toyota Supra",
+    "carro",
+    "moto"
   ]
 ,
 
   "negociacao": [
     "como funciona o pagamento",
     "posso negociar o valor",
-    "quais condições de compra vocês oferecem"
+    "quais condições de compra vocês oferecem",
+    "como negocio",
+    "como faço para comprar"
   ]
 }

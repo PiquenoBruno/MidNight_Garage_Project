@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<h1>Ola mundo</h1>
+<body>
+    <script>
+        const carregar = async () => {
+            const data = await fetch("http://localhost:3000/carro")
+            const dados = await data.json() 
+
+            dados.forEach(item => {
+                let p = document.createElement('p')
+                let p2 = document.createElement('p')
+                let p3 = document.createElement('p')
+                let p4 = document.createElement('p')
+                let p5 = document.createElement('p')
+
+                p.textContent = item.id
+                p2.textContent = item.modelo 
+                p3.textContent = item.marca 
+                p4.textContent = item.preco
+                p5.textContent = item.logotipo
+
+                document.body.appendChild(p)
+                document.body.appendChild(p2)
+                document.body.appendChild(p3)
+                document.body.appendChild(p4)
+                document.body.appendChild(p5)
+            })
+        }
+
+        carregar()
+    </script>
+</body>
+</html>

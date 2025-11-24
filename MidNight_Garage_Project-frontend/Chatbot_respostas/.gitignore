@@ -1,0 +1,38 @@
+# Arquivos de configuração do Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.egg-info/
+*.egg
+
+# Virtualenv
+venv/
+env/
+.venv/
+ENV/
+
+# Logs
+*.log
+
+# Arquivos temporários
+*.tmp
+*.swp
+*.swo
+*.bak
+
+# Modelos treinados (se não quiser versionar)
+models/*.pkl
+
+# Arquivos de banco de dados locais
+*.sqlite3
+*.db
+
+# Configurações do sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos de IDE
+.vscode/
+.idea/

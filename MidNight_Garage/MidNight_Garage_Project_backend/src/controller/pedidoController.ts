@@ -1,9 +1,7 @@
 import { connectionModel } from "../models/connectionModels";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 
-// ========================================
 // LISTAR TODOS OS PEDIDOS
-// ========================================
 const listarPedidos = async () => {
   const [rows] = await connectionModel.execute<RowDataPacket[]>(`
     SELECT 
@@ -22,9 +20,7 @@ const listarPedidos = async () => {
   return rows;
 };
 
-// ========================================
 // LISTAR PEDIDOS POR USUÁRIO
-// ========================================
 const listarPedidosPorUsuario = async (usuarioId: number) => {
   const [rows] = await connectionModel.execute<RowDataPacket[]>(
     `
@@ -47,9 +43,7 @@ const listarPedidosPorUsuario = async (usuarioId: number) => {
   return rows;
 };
 
-// ========================================
 // CRIAR NOVO PEDIDO
-// ========================================
 const criarPedido = async (usuario_id: number, veiculo_id: number) => {
   const [result] = await connectionModel.execute<ResultSetHeader>(
     "INSERT INTO pedidos (usuario_id, veiculo_id, data_pedido, status) VALUES (?, ?, NOW(), 'pendente')",
@@ -64,9 +58,7 @@ const criarPedido = async (usuario_id: number, veiculo_id: number) => {
   };
 };
 
-// ========================================
 // ATUALIZAR STATUS DO PEDIDO
-// ========================================
 const atualizarStatus = async (id: number, status: string) => {
   const [result] = await connectionModel.execute<ResultSetHeader>(
     "UPDATE pedidos SET status = ? WHERE id = ?",
@@ -76,9 +68,7 @@ const atualizarStatus = async (id: number, status: string) => {
   return { affectedRows: result.affectedRows, id, status };
 };
 
-// ========================================
 // REMOVER PEDIDO
-// ========================================
 const removerPedido = async (id: number) => {
   const [result] = await connectionModel.execute<ResultSetHeader>(
     "DELETE FROM pedidos WHERE id = ?",

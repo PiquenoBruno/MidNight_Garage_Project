@@ -13,8 +13,6 @@ def responder(mensagem: str):
         return "Os pagamentos são feitos apenas mediante negociação direta com nosso consultor especializado."
     elif intent == "promocao":
         return "Hoje temos condições exclusivas em alguns modelos. Deseja ver os carros em promoção?"
-    elif intent == "devolucao":
-        return "Você pode devolver em até 7 dias corridos. Deseja iniciar o processo de devolução?"
     else:
         return ("Não entendi sua pergunta. Talvez você esteja falando sobre: "
                 "1) Saudação, 2) Contato, 3) Veículo, "

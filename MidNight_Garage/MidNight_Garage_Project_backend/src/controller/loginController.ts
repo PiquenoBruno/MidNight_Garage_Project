@@ -3,8 +3,7 @@ import { connectionModel } from "../models/connectionModels";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-// Recomendo mover isso para variáveis de ambiente
-const JWT_SECRET = process.env.JWT_SECRET || "segredo123";
+const JWT_SECRET = process.env.JWT_SECRET || "";
 
 export const login = async (req: Request, res: Response) => {
   try {

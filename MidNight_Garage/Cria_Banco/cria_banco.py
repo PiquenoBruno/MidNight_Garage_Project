@@ -91,33 +91,32 @@ try:
     )
     conn.commit()
 
-    # INSERT DE VEÍCULOS (caminhos corrigidos para /images/)
+# INSERT DE VEÍCULOS (caminhos corrigidos para /images/)
     veiculos = [
-        ("carro", "Ferrari F8 Tributo", "Ferrari", 2022, 3500000.00,
-        "/images/1763665796177-ferrari.jpg", "Supercarro italiano com motor V8", False),
+    ("carro", "Ferrari F8 Tributo", "Ferrari", 2022, 3500000.00,
+    "/images/1763665796177-ferrari.jpg", "Ferrari F8 Tributo: O ápice da engenharia italiana com motor V8 biturbo de 720 cv. Design aerodinâmico agressivo, interior premium em couro e desempenho excepcional de 0-100 km/h em 2.9 segundos. Jante original e sistema de escapamento esportivo.", False),
 
-        ("carro", "Lamborghini Aventador", "Lamborghini", 2021, 4200000.00,
-        "/images/1763665934524-lambofrente.webp", "Modelo icônico da Lamborghini", True),
+    ("carro", "Lamborghini Aventador", "Lamborghini", 2021, 4200000.00,
+    "/images/1763665934524-lambofrente.webp", "Lamborghini Aventador: Supercarro lendário com motor V12 natural aspirado de 780 cv. Tração integral, câmbio automatizado de 7 marchas e carroceria em fibra de carbono. Interior racing com acabamento Alcantara e sistema de som premium.", True),
 
-        ("carro", "Porsche 911 Turbo S", "Porsche", 2023, 1500000.00,
-        "/images/1763666142228-911-turbo-S-1.jpg", "Esportivo alemão de alta performance", False),
+    ("carro", "Porsche 911 Turbo S", "Porsche", 2023, 1500000.00,
+    "/images/1763666142228-911-turbo-S-1.jpg", "Porsche 911 Turbo S: O esportivo alemão mais completo, com motor boxer biturbo de 650 cv. Tração integral Porsche, 0-100 km/h em 2.7 segundos e chassi adaptativo. Bancos esportivos em couro ventilados e pacote de conectividade completo.", False),
 
-        ("carro", "Rolls-Royce Ghost", "Rolls-Royce", 2020, 5000000.00,
-        "/images/1763666266828-rolls_royce_ghost_1.jpg", "Luxo absoluto em quatro rodas", True),
+    ("carro", "Rolls-Royce Ghost", "Rolls-Royce", 2020, 5000000.00,
+    "/images/1763666266828-rolls_royce_ghost_1.jpg", "Rolls-Royce Ghost: O epítome do luxo automotivo. Motor V12 de 563 cv com suspensão mágica adaptativa. Interior artesanal em madeira nobre e couro premium, teto estrelado e sistema de som Bespoke. Silêncio e conforto incomparáveis.", True),
 
-        ("carro", "Bentley Continental GT V8", "Bentley", 2022, 2000000.00,
-        "/images/1763666377873-Bentley-Continental-GT-V8-Brasil_(3).jpg", "Elegância e potência britânica", False),
+    ("carro", "Bentley Continental GT V8", "Bentley", 2022, 2000000.00,
+    "/images/1763666377873-Bentley-Continental-GT-V8-Brasil_(3).jpg", "Bentley Continental GT V8: Gran Turismo de alto desempenho com motor V8 biturbo de 550 cv. Design elegante com acabamento cromado, interior em couro Bridge of Weir e madeira veneer. Tecnologia de assistência ao motorista e modo esportivo.", False),
 
-        ("moto", "Honda CBR 1000RR", "Honda", 2021, 98000.00,
-        "/images/1763666456301-honda-cbr-em-curitiba-pr-3f4a4f02.webp", "Moto esportiva de alta performance", False),
+    ("moto", "Honda CBR 1000RR", "Honda", 2021, 98000.00,
+    "/images/1763666456301-honda-cbr-em-curitiba-pr-3f4a4f02.webp", "Honda CBR 1000RR Fireblade: Superesportiva com motor de 999cc e 189 cv. Eletrônica avançada com controle de tração, wheelie e ABS. Chassi leve em alumínio, suspensão Showa e carenagem aerodinâmica para pista.", False),
 
-        ("moto", "Yamaha MT-07", "Yamaha", 2023, 46000.00,
-        "/images/1763666541325-yamaha-mt07-abs-wmimagem08401455624.webp", "Modelo muito popular e versátil", False),
+    ("moto", "Yamaha MT-07", "Yamaha", 2023, 46000.00,
+    "/images/1763666541325-yamaha-mt07-abs-wmimagem08401455624.webp", "Yamaha MT-07: Naked bike versátil com motor CP2 de 689cc e 74 cv. Conhecida pela agilidade urbana e torque linear. Suspensão dianteira invertida, freios ABS e design agressivo com iluminação LED. Ideal para dia a dia e curvas.", False),
 
-        ("moto", "BMW S1000RR", "BMW", 2022, 120000.00,
-        "/images/1763666613780-OIP.webp", "Superbike alemã de alto nível", True)
+    ("moto", "BMW S1000RR", "BMW", 2022, 120000.00,
+    "/images/1763666613780-OIP.webp", "BMW S1000RR: Superbike alemã de 999cc e 207 cv. Eletrônica completa com modos de condução, shift assist e controle de suspensão dinâmico. Design assimétrico icônico, chassi leve e aerodinâmica avançada para máximo desempenho em pista.", True)
     ]
-
     cursor.executemany(
         """INSERT INTO veiculos 
         (type, name, brand, year, price, image, description, vendido) 

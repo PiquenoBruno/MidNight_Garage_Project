@@ -39,11 +39,11 @@ export default function Catalogo() {
   })
 
   return (
-    <div className="bg-background bg-no-repeat bg-cover text-text-color font-sans min-h-screen flex flex-col">
+    <div className="bg-black bg-no-repeat bg-cover text-text-color font-sans min-h-screen flex flex-col">
       <Header />
 
       {/* Filtros */}
-      <div className="p-6 bg-text-background text-text-color flex flex-col md:flex-row gap-6 justify-center items-center shadow-lg rounded-xl">
+      <div className="p-6 bg-black text-text-color flex flex-col md:flex-row gap-6 justify-center items-center shadow-lg rounded-xl">
         <select
           value={filtroMarca}
           onChange={(e) => setFiltroMarca(e.target.value)}

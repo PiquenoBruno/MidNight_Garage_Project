@@ -7,7 +7,8 @@ export default function Home() {
     <div
       className="bg-background bg-no-repeat bg-cover text-text-color font-sans min-h-screen flex flex-col"
       style={{
-        backgroundPosition: 'center 139px',
+        backgroundImage: "url('/midnight_fundo01.gif')",
+        backgroundPosition: "center 144px",
       }}
     >
       <Header />

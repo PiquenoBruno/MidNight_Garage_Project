@@ -29,7 +29,7 @@ const atualizarUsuario = async (
     [dados.nome, dados.email, dados.senha, dados.telefone, id]
   ) as [ResultSetHeader, unknown];
 
-  return result.affectedRows; // retorna quantas linhas foram alteradas
+  return result.affectedRows; 
 };
 
 const removerUsuario = async (id: number) => {
@@ -38,17 +38,16 @@ const removerUsuario = async (id: number) => {
     [id]
   ) as [ResultSetHeader, unknown];
 
-  return result.affectedRows; // retorna quantas linhas foram removidas
+  return result.affectedRows;
 };
 
-// 🔑 novo método para login
 const buscarPorEmail = async (email: string) => {
   const [rows] = await connectionModel.execute(
     "SELECT * FROM usuarios WHERE email = ?",
     [email]
   ) as [RowDataPacket[], unknown];
 
-  return rows[0]; // retorna o primeiro usuário encontrado
+  return rows[0]; 
 };
 
 export default {
@@ -56,5 +55,5 @@ export default {
   criarUsuario,
   atualizarUsuario,
   removerUsuario,
-  buscarPorEmail, // agora disponível para o controller
+  buscarPorEmail, 
 };

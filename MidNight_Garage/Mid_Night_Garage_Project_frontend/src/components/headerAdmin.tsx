@@ -1,6 +1,6 @@
 export default function HeaderAdmin() {
   return (
-    <header className="bg-background w-full z-50">
+    <header className="bg-black w-full z-50">
       <div className="max-w-screen-md mx-auto px-4 py-6 flex flex-col items-center justify-center text-center relative">
         {/* Logo centralizado */}
         <img src="/Logo_Midnight2.png" alt="Logo" className="w-16 h-16 mb-2" />
